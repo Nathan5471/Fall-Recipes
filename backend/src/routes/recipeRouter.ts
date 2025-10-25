@@ -1,5 +1,11 @@
 import express from "express";
-import { createRecipe } from "../controllers/recipeController";
+import {
+  createRecipe,
+  getAllRecipes,
+  getPendingApprovalRecipes,
+  getRejectedRecipesByUser,
+  getRecipeById,
+} from "../controllers/recipeController";
 import authenticate from "../middleware/authenticate";
 
 const router = express.Router();
@@ -41,6 +47,22 @@ router.post("/create", authenticate, async (req: any, res: any) => {
   }
 
   await createRecipe(req, res);
+});
+
+router.get("/all", getAllRecipes);
+
+router.get("/all/pending-approval", authenticate, getPendingApprovalRecipes);
+
+router.get("/all/rejected", authenticate, getRejectedRecipesByUser);
+
+router.get("/:id", async (req: any, res: any) => {
+  const { id } = req.params as { id: string };
+
+  if (!id) {
+    return res.status(400).json({ message: "Recipe ID is required" });
+  }
+
+  await getRecipeById(req, res);
 });
 
 export default router;
