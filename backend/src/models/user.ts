@@ -8,4 +8,10 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
+export interface UserType extends mongoose.Document {
+  username: string;
+  password: string;
+  accountType: "user" | "admin";
+}
+
 export default User;
