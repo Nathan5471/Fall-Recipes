@@ -14,6 +14,8 @@ const recipeSchema = new mongoose.Schema({
     enum: ["pending", "approved", "rejected"],
     default: "pending",
   },
+  rejectReason: { type: String },
+  reapprovalMessage: { type: String },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

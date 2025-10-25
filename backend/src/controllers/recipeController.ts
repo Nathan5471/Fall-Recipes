@@ -23,6 +23,77 @@ export const createRecipe = async (req: any, res: any) => {
   }
 };
 
+export const approveRecipe = async (req: any, res: any) => {
+  const { id } = req.params as { id: string };
+  const user = req.user as UserType;
+
+  if (user.accountType !== "admin") {
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const recipe = await Recipe.findById(id);
+    if (!recipe) {
+      return res.status(404).json({ message: "Recipe not found" });
+    }
+    recipe.status = "approved";
+    await recipe.save();
+    return res.status(200).json({ message: "Recipe approved successfully" });
+  } catch (error) {
+    console.error("Error approving recipe:", error);
+    return res.status(500).json({ message: "Failed to approve recipe" });
+  }
+};
+
+export const rejectRecipe = async (req: any, res: any) => {
+  const { id } = req.params as { id: string };
+  const { reason } = req.body as { reason: string };
+  const user = req.user as UserType;
+
+  if (user.accountType !== "admin") {
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const recipe = await Recipe.findById(id);
+    if (!recipe) {
+      return res.status(404).json({ message: "Recipe not found" });
+    }
+    recipe.status = "rejected";
+    recipe.rejectReason = reason;
+    await recipe.save();
+    return res.status(200).json({ message: "Recipe rejected successfully" });
+  } catch (error) {
+    console.error("Error rejecting recipe:", error);
+    return res.status(500).json({ message: "Failed to reject recipe" });
+  }
+};
+
+export const requestReapproval = async (req: any, res: any) => {
+  const { id } = req.params as { id: string };
+  const { message } = req.body as { message: string };
+  const user = req.user as UserType;
+
+  try {
+    const recipe = await Recipe.findById(id);
+    if (!recipe) {
+      return res.status(404).json({ message: "Recipe not found" });
+    }
+    if (recipe.createdBy.toString() !== (user._id as string).toString()) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+    recipe.status = "pending";
+    recipe.reapprovalMessage = message;
+    await recipe.save();
+    return res
+      .status(200)
+      .json({ message: "Reapproval requested successfully" });
+  } catch (error) {
+    console.error("Error requesting reapproval:", error);
+    return res.status(500).json({ message: "Failed to request reapproval" });
+  }
+};
+
 export const getAllRecipes = async (req: any, res: any) => {
   try {
     const recipes = await Recipe.find({ status: "approved" }).populate(

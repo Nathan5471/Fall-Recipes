@@ -1,6 +1,9 @@
 import express from "express";
 import {
   createRecipe,
+  approveRecipe,
+  rejectRecipe,
+  requestReapproval,
   getAllRecipes,
   getPendingApprovalRecipes,
   getRejectedRecipesByUser,
@@ -48,6 +51,46 @@ router.post("/create", authenticate, async (req: any, res: any) => {
 
   await createRecipe(req, res);
 });
+
+router.post("/approve/:id", authenticate, async (req: any, res: any) => {
+  const { id } = req.params as { id: string };
+
+  if (!id) {
+    return res.status(400).json({ message: "Recipe ID is required" });
+  }
+
+  await approveRecipe(req, res);
+});
+
+router.post("/reject/:id", authenticate, async (req: any, res: any) => {
+  const { id } = req.params as { id: string };
+  const { reason } = req.body as { reason: string };
+
+  if (!id || !reason) {
+    return res
+      .status(400)
+      .json({ message: "Recipe ID and reason are required" });
+  }
+
+  await rejectRecipe(req, res);
+});
+
+router.post(
+  "/request-reapproval/:id",
+  authenticate,
+  async (req: any, res: any) => {
+    const { id } = req.params as { id: string };
+    const { message } = req.body as { message: string };
+
+    if (!id || !message) {
+      return res
+        .status(400)
+        .json({ message: "Recipe ID and message are required" });
+    }
+
+    await requestReapproval(req, res);
+  }
+);
 
 router.get("/all", getAllRecipes);
 
