@@ -1,8 +1,10 @@
 import express from "express";
+import { signup, login } from "../controllers/authController";
+import authenticate from "../middleware/authenticate";
 
 const router = express.Router();
 
-router.post("/signup", (req: any, res: any) => {
+router.post("/signup", async (req: any, res: any) => {
   const { username, password } = req.body as {
     username: string;
     password: string;
@@ -20,10 +22,10 @@ router.post("/signup", (req: any, res: any) => {
       .json({ message: "Password must be at least 6 characters long" });
   }
 
-  // TODO: Add signup logic
+  await signup(req, res);
 });
 
-router.post("/login", (req: any, res: any) => {
+router.post("/login", async (req: any, res: any) => {
   const { username, password } = req.body as {
     username: string;
     password: string;
@@ -35,7 +37,22 @@ router.post("/login", (req: any, res: any) => {
       .json({ message: "Username and password are required" });
   }
 
-  // TODO: Add login logic
+  await login(req, res);
+});
+
+router.post("/logout", (req: any, res: any) => {
+  res.clearCookie("token");
+  return res.status(200).json({ message: "Logout successful" });
+});
+
+router.get("/current", authenticate, (req: any, res: any) => {
+  const user = req.user;
+  return res
+    .status(200)
+    .json({
+      user: { username: user.username, accountType: user.accountType },
+      message: "User retrieved successfully",
+    });
 });
 
 export default router;

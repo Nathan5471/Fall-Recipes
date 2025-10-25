@@ -1,5 +1,6 @@
 import User from "../models/user";
 import bcrypt from "bcrypt";
+import generateToken from "../utils/generateToken";
 
 export const signup = async (req: any, res: any) => {
   const { username, password } = req.body as {
@@ -46,7 +47,12 @@ export const login = async (req: any, res: any) => {
     if (!isPasswordValid) {
       return res.status(400).json({ message: "Invalid username or password" });
     }
-    // TODO: Implement JWT token generation and set cookie
+    const token = generateToken(user._id.toString());
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "Strict",
+    });
     return res.status(200).json({ message: "Login successful" });
   } catch (error) {
     console.error("Error logging in user:", error);
