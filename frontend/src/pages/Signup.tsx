@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { IoEye, IoEyeOff } from "react-icons/io5";
+import { signup } from "../utils/AuthAPIHandler";
 
 export default function Signup() {
   const [username, setUsername] = useState("");
@@ -10,9 +11,34 @@ export default function Signup() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
 
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    try {
+      await signup(username, password);
+      window.location.href = "/login";
+    } catch (error: unknown) {
+      const message =
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error &&
+        typeof error.message === "string"
+          ? error.message
+          : "An unknown error occurred";
+      setError(message);
+    }
+  };
+
   return (
     <div className="w-screen h-screen bg-color-4 text-color-1 flex items-center justify-center">
-      <form className="bg-color-3 p-4 rounded-lg flex flex-col w-80">
+      <form
+        className="bg-color-3 p-4 rounded-lg flex flex-col w-80"
+        onSubmit={handleSignup}
+      >
         <h1 className="text-3xl mb-4 text-center font-bold">Sign Up</h1>
         <label htmlFor="username" className="mb-1 text-xl">
           Username
