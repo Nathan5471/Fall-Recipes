@@ -4,8 +4,8 @@ import { UserType } from "../models/user";
 export const createRecipe = async (req: any, res: any) => {
   const { title, ingredients, instructions } = req.body as {
     title: string;
-    ingredients: Array<{ ingredient: string; amount: string }>;
-    instructions: string[];
+    ingredients: string; // Array<{ ingredient: string; amount: string }> that was JSON.stringified
+    instructions: string; // string[] that was JSON.stringified
   };
   const imageFilepath = req.image as string;
   const user = req.user as UserType;
@@ -14,8 +14,8 @@ export const createRecipe = async (req: any, res: any) => {
     await Recipe.create({
       title,
       imageFilepath,
-      ingredients,
-      instructions,
+      ingredients: JSON.parse(ingredients),
+      instructions: JSON.parse(instructions),
       createdBy: user._id,
     });
     return res.status(201).json({ message: "Recipe created successfully" });
@@ -169,14 +169,12 @@ export const getRecipeById = async (req: any, res: any) => {
     if (!recipe) {
       return res.status(404).json({ message: "Recipe not found" });
     }
-    return res
-      .status(200)
-      .json({
-        recipe: {
-          ...recipe.toObject(),
-          imageUrl: `/api/images/${recipe.imageFilepath.split("/").pop()}`,
-        },
-      });
+    return res.status(200).json({
+      recipe: {
+        ...recipe.toObject(),
+        imageUrl: `/api/images/${recipe.imageFilepath.split("/").pop()}`,
+      },
+    });
   } catch (error) {
     console.error("Error fetching recipe by ID:", error);
     return res.status(500).json({ message: "Failed to fetch recipe" });

@@ -21,8 +21,8 @@ router.post(
   async (req: any, res: any) => {
     const { title, ingredients, instructions } = req.body as {
       title: string;
-      ingredients: Array<{ ingredient: string; amount: string }>;
-      instructions: string[];
+      ingredients: string; // Array<{ ingredient: string; amount: string }> that was JSON.stringified
+      instructions: string; //string[] that was JSON.stringified
     };
 
     if (!title || !ingredients || !instructions) {
@@ -31,15 +31,19 @@ router.post(
         .json({ message: "Title, ingredients, and instructions are required" });
     }
 
-    if (!Array.isArray(ingredients) || ingredients.length === 0) {
+    if (
+      !Array.isArray(JSON.parse(ingredients)) ||
+      JSON.parse(ingredients).length === 0
+    ) {
       return res
         .status(400)
         .json({ message: "Ingredients must be a non-empty array" });
     }
 
     if (
-      ingredients.some(
-        (ingredient) => !ingredient.ingredient || !ingredient.amount
+      JSON.parse(ingredients).some(
+        (ingredient: { ingredient: string; amount: string }) =>
+          !ingredient.ingredient || !ingredient.amount
       )
     ) {
       return res.status(400).json({
@@ -48,7 +52,10 @@ router.post(
       });
     }
 
-    if (!Array.isArray(instructions) || instructions.length === 0) {
+    if (
+      !Array.isArray(JSON.parse(instructions)) ||
+      JSON.parse(instructions).length === 0
+    ) {
       return res
         .status(400)
         .json({ message: "Instructions must be a non-empty array" });

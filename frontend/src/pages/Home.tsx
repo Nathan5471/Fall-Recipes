@@ -30,8 +30,8 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="w-screen h-screen flex flex-col bg-color-3 text-color-1">
-      <div className="w-full h-16 grid grid-cols-3 bg-color-2">
+    <div className="w-screen h-screen flex flex-col bg-color-4 text-color-1">
+      <div className="w-full h-16 grid grid-cols-3 bg-color-3">
         <div />
         <h1 className="text-3xl font-bold w-full items-center justify-center text-center flex">
           Fall Recipes
@@ -40,14 +40,14 @@ export default function Home() {
           {user ? (
             <Link
               to="/create"
-              className="bg-color-4 font-bold p-2 rounded-lg hover:scale-105 transition-transform"
+              className="bg-color-2 font-bold p-2 rounded-lg hover:scale-105 transition-transform"
             >
               Create
             </Link>
           ) : (
             <Link
               to="/login"
-              className="bg-color-4 font-bold p-2 rounded-lg hover:scale-105 transition-transform"
+              className="bg-color-2 font-bold p-2 rounded-lg hover:scale-105 transition-transform"
             >
               Login
             </Link>
