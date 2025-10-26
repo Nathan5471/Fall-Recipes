@@ -47,12 +47,14 @@ router.post("/logout", (req: any, res: any) => {
 
 router.get("/current", authenticate, (req: any, res: any) => {
   const user = req.user;
-  return res
-    .status(200)
-    .json({
-      user: { username: user.username, accountType: user.accountType },
-      message: "User retrieved successfully",
-    });
+  return res.status(200).json({
+    user: {
+      _id: user._id,
+      username: user.username,
+      accountType: user.accountType,
+    },
+    message: "User retrieved successfully",
+  });
 });
 
 export default router;
