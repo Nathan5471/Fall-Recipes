@@ -52,6 +52,14 @@ export default function Home() {
               Login
             </Link>
           )}
+          {user?.accountType === "admin" && (
+            <Link
+              to="/admin"
+              className="ml-2 bg-color-2 font-bold p-2 rounded-lg hover:scale-105 transition-transform"
+            >
+              Admin
+            </Link>
+          )}
         </div>
       </div>
       <div className="w-full h-full overflow-y-auto p-4 flex flex-col">

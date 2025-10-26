@@ -6,6 +6,8 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import Create from "./pages/Create";
+import ProtectedAdminRoute from "./utils/ProtectedAdminRoute";
+import Admin from "./pages/Admin";
 
 function App() {
   const { user, getUser } = useAuth();
@@ -24,6 +26,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/create" element={<Create />} />
+        </Route>
+        <Route element={<ProtectedAdminRoute />}>
+          <Route path="/admin" element={<Admin />} />
         </Route>
       </Routes>
     </Router>
