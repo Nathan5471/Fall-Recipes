@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const recipeSchema = new mongoose.Schema({
   title: { type: String, required: true },
+  imageFilepath: { type: String, required: true },
   ingredients: [
     {
       ingredient: { type: String, required: true },

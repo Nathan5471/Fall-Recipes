@@ -14,6 +14,7 @@ app.use(cookieParser());
 // Routes
 app.use("/api/auth", authRouter);
 app.use("/api/recipes", recipeRouter);
+app.use("/api/images", express.static("uploads"));
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

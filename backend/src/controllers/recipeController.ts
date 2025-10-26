@@ -7,11 +7,13 @@ export const createRecipe = async (req: any, res: any) => {
     ingredients: Array<{ ingredient: string; amount: string }>;
     instructions: string[];
   };
+  const imageFilepath = req.image as string;
   const user = req.user as UserType;
 
   try {
     await Recipe.create({
       title,
+      imageFilepath,
       ingredients,
       instructions,
       createdBy: user._id,
@@ -100,7 +102,13 @@ export const getAllRecipes = async (req: any, res: any) => {
       "createdBy",
       "username"
     );
-    return res.status(200).json(recipes);
+    const imagedRecipes = recipes.map((recipe) => {
+      return {
+        ...recipe.toObject(),
+        imageUrl: `/api/images/${recipe.imageFilepath.split("/").pop()}`,
+      };
+    });
+    return res.status(200).json({ recipes: imagedRecipes });
   } catch (error) {
     console.error("Error fetching recipes:", error);
     return res.status(500).json({ message: "Failed to fetch recipes" });
@@ -119,7 +127,13 @@ export const getPendingApprovalRecipes = async (req: any, res: any) => {
       "createdBy",
       "username"
     );
-    return res.status(200).json(recipes);
+    const imagedRecipes = recipes.map((recipe) => {
+      return {
+        ...recipe.toObject(),
+        imageUrl: `/api/images/${recipe.imageFilepath.split("/").pop()}`,
+      };
+    });
+    return res.status(200).json({ recipes: imagedRecipes });
   } catch (error) {
     console.error("Error fetching pending approval recipes:", error);
     return res.status(500).json({ message: "Failed to fetch recipes" });
@@ -134,7 +148,13 @@ export const getRejectedRecipesByUser = async (req: any, res: any) => {
       status: "rejected",
       createdBy: user._id,
     }).populate("createdBy", "username");
-    return res.status(200).json(recipes);
+    const imagedRecipes = recipes.map((recipe) => {
+      return {
+        ...recipe.toObject(),
+        imageUrl: `/api/images/${recipe.imageFilepath.split("/").pop()}`,
+      };
+    });
+    return res.status(200).json({ recipes: imagedRecipes });
   } catch (error) {
     console.error("Error fetching rejected recipes:", error);
     return res.status(500).json({ message: "Failed to fetch recipes" });
@@ -149,7 +169,14 @@ export const getRecipeById = async (req: any, res: any) => {
     if (!recipe) {
       return res.status(404).json({ message: "Recipe not found" });
     }
-    return res.status(200).json(recipe);
+    return res
+      .status(200)
+      .json({
+        recipe: {
+          ...recipe.toObject(),
+          imageUrl: `/api/images/${recipe.imageFilepath.split("/").pop()}`,
+        },
+      });
   } catch (error) {
     console.error("Error fetching recipe by ID:", error);
     return res.status(500).json({ message: "Failed to fetch recipe" });
