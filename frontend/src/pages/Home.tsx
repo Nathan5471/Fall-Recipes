@@ -55,9 +55,12 @@ export default function Home() {
     <div className="w-screen h-screen flex flex-col bg-color-4 text-color-1">
       <div className="w-full h-16 grid grid-cols-3 bg-color-3">
         <div />
-        <h1 className="text-3xl font-bold w-full items-center justify-center text-center flex">
+        <Link
+          to="/"
+          className="text-3xl font-bold w-full items-center justify-center text-center flex hover:underline"
+        >
           Fall Recipes
-        </h1>
+        </Link>
         <div className="w-full flex items-center justify-end pr-2">
           {user ? (
             <Link
