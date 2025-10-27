@@ -80,7 +80,7 @@ export default function Home() {
                   className="bg-color-2 rounded-lg p-2"
                 >
                   <img
-                    src={`${window.location.origin}/${recipe.imageUrl}`}
+                    src={`${window.location.origin}${recipe.imageUrl}`}
                     alt={recipe.title}
                     className="w-full h-48 object-cover rounded-lg mb-2"
                   />
