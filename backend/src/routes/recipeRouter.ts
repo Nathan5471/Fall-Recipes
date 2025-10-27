@@ -7,6 +7,7 @@ import {
   getAllRecipes,
   getPendingApprovalRecipes,
   getRejectedRecipesByUser,
+  getRecipesByUserId,
   getRecipeById,
 } from "../controllers/recipeController";
 import authenticate from "../middleware/authenticate";
@@ -118,6 +119,16 @@ router.get("/all", getAllRecipes);
 router.get("/all/pending-approval", authenticate, getPendingApprovalRecipes);
 
 router.get("/all/rejected", authenticate, getRejectedRecipesByUser);
+
+router.get("/user/:userId", authenticate, async (req: any, res: any) => {
+  const { userId } = req.params as { userId: string };
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
+  await getRecipesByUserId(req, res);
+});
 
 router.get("/:id", async (req: any, res: any) => {
   const { id } = req.params as { id: string };

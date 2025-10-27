@@ -1,5 +1,5 @@
 import Recipe from "../models/recipe";
-import { UserType } from "../models/user";
+import User, { UserType } from "../models/user";
 
 export const createRecipe = async (req: any, res: any) => {
   const { title, ingredients, instructions } = req.body as {
@@ -157,6 +157,33 @@ export const getRejectedRecipesByUser = async (req: any, res: any) => {
     return res.status(200).json({ recipes: imagedRecipes });
   } catch (error) {
     console.error("Error fetching rejected recipes:", error);
+    return res.status(500).json({ message: "Failed to fetch recipes" });
+  }
+};
+
+export const getRecipesByUserId = async (req: any, res: any) => {
+  const { userId } = req.params as { userId: string };
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const recipes = await Recipe.find({ createdBy: userId }).populate(
+      "createdBy",
+      "username"
+    );
+    const imagedRecipes = recipes.map((recipe) => {
+      return {
+        ...recipe.toObject(),
+        imageUrl: `/api/images/${recipe.imageFilepath.split("/").pop()}`,
+      };
+    });
+    return res
+      .status(200)
+      .json({ username: user.username, recipes: imagedRecipes });
+  } catch (error) {
+    console.error("Error fetching recipes by user ID:", error);
     return res.status(500).json({ message: "Failed to fetch recipes" });
   }
 };
