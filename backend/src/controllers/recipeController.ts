@@ -169,10 +169,10 @@ export const getRecipesByUserId = async (req: any, res: any) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const recipes = await Recipe.find({ createdBy: userId }).populate(
-      "createdBy",
-      "username"
-    );
+    const recipes = await Recipe.find({
+      createdBy: userId,
+      status: "approved",
+    }).populate("createdBy", "username");
     const imagedRecipes = recipes.map((recipe) => {
       return {
         ...recipe.toObject(),

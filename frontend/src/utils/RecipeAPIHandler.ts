@@ -54,6 +54,11 @@ export const getRejectedRecipesByUser = async () => {
   return response.data;
 };
 
+export const getRecipesByUserId = async (userId: string) => {
+  const response = await api.get(`/user/${userId}`);
+  return response.data;
+};
+
 export const getRecipeById = async (id: string) => {
   const response = await api.get(`/${id}`);
   return response.data;

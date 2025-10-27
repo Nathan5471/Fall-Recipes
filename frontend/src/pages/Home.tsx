@@ -13,7 +13,7 @@ export default function Home() {
     instructions: string[];
     status: "pending" | "approved" | "rejected";
     imageUrl: string;
-    createdBy: string;
+    createdBy: { username: string; _id: string };
     createdAt: string;
   }
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -115,6 +115,7 @@ export default function Home() {
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
                     <h2 className="text-2xl font-bold">{recipe.title}</h2>
+                    <p className="mt-2">By {recipe.createdBy.username}</p>
                   </Link>
                 ))
               )}

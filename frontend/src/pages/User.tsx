@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { getRecipeById } from "../utils/RecipeAPIHandler";
+import { getRecipesByUserId } from "../utils/RecipeAPIHandler";
 
-export default function Recipe() {
-  const { recipeId } = useParams() as { recipeId: string };
+export default function User() {
+  const { userId } = useParams() as { userId: string };
   const { user } = useAuth();
   interface Recipe {
     _id: string;
@@ -16,25 +16,26 @@ export default function Recipe() {
     createdBy: { username: string; _id: string };
     createdAt: string;
   }
-  const [recipe, setRecipe] = useState<Recipe | null | undefined>(undefined);
+  const [username, setUsername] = useState<string>("");
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const handleFetchRecipeData = async () => {
+    const fetchUserRecipes = async () => {
       try {
-        const data = await getRecipeById(recipeId);
-        setRecipe(data.recipe);
+        const data = await getRecipesByUserId(userId);
+        setUsername(data.username);
+        setRecipes(data.recipes);
       } catch (error) {
-        console.error("Error fetching recipe data:", error);
-        setRecipe(null);
+        console.error("Error fetching user recipes:", error);
       } finally {
         setLoading(false);
       }
     };
-    if (recipeId && recipe === undefined) {
-      handleFetchRecipeData();
+    if (userId) {
+      fetchUserRecipes();
     }
-  });
+  }, [userId]);
 
   if (loading) {
     return (
@@ -77,7 +78,7 @@ export default function Recipe() {
     );
   }
 
-  if (recipe === null) {
+  if (!username) {
     return (
       <div className="w-screen h-screen flex flex-col bg-color-4 text-color-1">
         <div className="w-full h-16 grid grid-cols-3 bg-color-3">
@@ -114,8 +115,8 @@ export default function Recipe() {
             )}
           </div>
         </div>
-        <div className="w-full h-full flex justify-center itmes-center">
-          <p className="text-2xl">Recipe not found</p>
+        <div className="w-full h-full items-center justify-center flex">
+          <p className="text-center mt-6">User not found.</p>
         </div>
       </div>
     );
@@ -157,44 +158,31 @@ export default function Recipe() {
           )}
         </div>
       </div>
-      <div className="w-screen h-full overflow-y-auto flex flex-row">
-        <div className="w-1/3 flex flex-col items-center p-2">
-          <h2 className="text-3xl font-bold">{recipe?.title}</h2>
-          <p className="mb-4">
-            By{" "}
-            <Link
-              to={`/user/${recipe?.createdBy._id}`}
-              className="hover:underline"
-            >
-              {recipe?.createdBy.username}
-            </Link>
-          </p>
-          <img
-            src={`${window.location.origin}${recipe?.imageUrl}`}
-            alt={recipe?.title}
-            className="w-full h-64 object-cover rounded-lg mb-4"
-          />
-          <div className="w-full overflow-y-auto">
-            <h3 className="text-2xl font-bold mb-2">Ingredients</h3>
-            <ul className="list-disc list-inside mb-4">
-              {recipe?.ingredients.map((ingredient, index) => (
-                <li key={index}>
-                  {ingredient.amount} {ingredient.ingredient}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-        <div className="w-2/3 flex flex-col overflow-y-auto p-2">
-          <h3 className="text-2xl font-bold mb-2">Instructions</h3>
-          <ol className="list-decimal list-inside">
-            {recipe?.instructions.map((instruction, index) => (
-              <li key={index} className="mb-2">
-                {instruction}
-              </li>
+      <div className="w-full h-full overflow-y-auto p-4 flex flex-col">
+        <h1 className="text-4xl font-bold mb-4 text-center">
+          {username}'s Recipes
+        </h1>
+        {recipes.length === 0 ? (
+          <p className="text-center mt-6">No recipes found for this user.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+            {recipes.map((recipe) => (
+              <Link
+                to={`/recipe/${recipe._id}`}
+                key={recipe._id}
+                className="bg-color-2 rounded-lg p-2 hover:scale-105 transition-transform"
+              >
+                <img
+                  src={`${window.location.origin}${recipe.imageUrl}`}
+                  alt={recipe.title}
+                  className="w-full h-48 object-cover rounded-lg mb-2"
+                />
+                <h2 className="text-2xl font-bold">{recipe.title}</h2>
+                <p className="mt-2">By {recipe.createdBy.username}</p>
+              </Link>
             ))}
-          </ol>
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
