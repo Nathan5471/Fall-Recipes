@@ -11,7 +11,6 @@ COPY backend/package*.json ./
 RUN npm install
 COPY backend/ ./
 COPY --from=frontend /frontend/dist ./public
-RUN mkdir uploads
 RUN npm run build
 
 EXPOSE 3000
