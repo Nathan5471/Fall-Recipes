@@ -4,7 +4,6 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import authRouter from "./routes/authRouter";
 import recipeRouter from "./routes/recipeRouter";
-import { createProxyMiddleware } from "http-proxy-middleware";
 
 dotenv.config();
 
@@ -25,13 +24,17 @@ app.use("/api/recipes", recipeRouter);
 app.use("/api/images", express.static("uploads"));
 
 // Frontend
-app.use(
-  "/",
-  createProxyMiddleware({
-    target: "http://localhost:5173",
-    changeOrigin: true,
-  })
-);
+app.use(express.static("public"));
+
+app.use((req: any, res: any) => {
+  res.sendFile("./public/index.html", { root: "." }, (error: any) => {
+    if (error) {
+      console.error("Error sending index file:", error);
+
+      res.status(500).send("Page not found");
+    }
+  });
+});
 
 mongoose
   .connect(MONGOOSE_URL)
