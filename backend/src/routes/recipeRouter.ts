@@ -8,6 +8,7 @@ import {
   getPendingApprovalRecipes,
   getRejectedRecipesByUser,
   getRecipesByUserId,
+  getStats,
   getRecipeById,
 } from "../controllers/recipeController";
 import authenticate from "../middleware/authenticate";
@@ -120,7 +121,7 @@ router.get("/all/pending-approval", authenticate, getPendingApprovalRecipes);
 
 router.get("/all/rejected", authenticate, getRejectedRecipesByUser);
 
-router.get("/user/:userId", authenticate, async (req: any, res: any) => {
+router.get("/user/:userId", async (req: any, res: any) => {
   const { userId } = req.params as { userId: string };
 
   if (!userId) {
@@ -129,6 +130,8 @@ router.get("/user/:userId", authenticate, async (req: any, res: any) => {
 
   await getRecipesByUserId(req, res);
 });
+
+router.get("/stats", authenticate, getStats);
 
 router.get("/:id", async (req: any, res: any) => {
   const { id } = req.params as { id: string };

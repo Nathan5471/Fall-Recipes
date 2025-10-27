@@ -59,6 +59,11 @@ export const getRecipesByUserId = async (userId: string) => {
   return response.data;
 };
 
+export const getStats = async () => {
+  const response = await api.get("/stats");
+  return response.data;
+};
+
 export const getRecipeById = async (id: string) => {
   const response = await api.get(`/${id}`);
   return response.data;

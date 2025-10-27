@@ -188,6 +188,40 @@ export const getRecipesByUserId = async (req: any, res: any) => {
   }
 };
 
+export const getStats = async (req: any, res: any) => {
+  const user = req.user as UserType;
+
+  if (user.accountType !== "admin") {
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const approvedRecipeCount = await Recipe.countDocuments({
+      status: "approved",
+    });
+    const rejectedRecipeCount = await Recipe.countDocuments({
+      status: "rejected",
+    });
+    const pendingRecipeCount = await Recipe.countDocuments({
+      status: "pending",
+    });
+    const totalRecipeCount =
+      approvedRecipeCount + rejectedRecipeCount + pendingRecipeCount;
+    const userCount = await User.countDocuments();
+
+    return res.status(200).json({
+      approvedRecipeCount,
+      rejectedRecipeCount,
+      pendingRecipeCount,
+      totalRecipeCount,
+      userCount,
+    });
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+    return res.status(500).json({ message: "Failed to fetch stats" });
+  }
+};
+
 export const getRecipeById = async (req: any, res: any) => {
   const { id } = req.params as { id: string };
 

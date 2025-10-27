@@ -4,9 +4,17 @@ import {
   getPendingApprovalRecipes,
   approveRecipe,
   rejectRecipe,
+  getStats,
 } from "../utils/RecipeAPIHandler";
 
 export default function Admin() {
+  const [stats, setStats] = useState({
+    approvedRecipeCount: 0,
+    rejectedRecipeCount: 0,
+    pendingRecipeCount: 0,
+    totalRecipeCount: 0,
+    userCount: 0,
+  });
   interface Recipe {
     _id: string;
     title: string;
@@ -28,6 +36,15 @@ export default function Admin() {
   useEffect(() => {
     const fetchPendingRecipes = async () => {
       try {
+        const statsData = (await getStats()) as {
+          approvedRecipeCount: number;
+          rejectedRecipeCount: number;
+          pendingRecipeCount: number;
+          totalRecipeCount: number;
+          userCount: number;
+        };
+        console.log("Stats data:", statsData);
+        setStats(statsData);
         const data = await getPendingApprovalRecipes();
         setPendingRecipes(data.recipes);
       } catch (error) {
@@ -80,7 +97,39 @@ export default function Admin() {
           </Link>
         </div>
       </div>
-      <div className="w-full h-full overflow-y-auto p-4 flex">
+      <div className="w-full h-full overflow-y-auto p-4 flex flex-col">
+        <div className="flex flex-row w-full items-center justify-center mt-4">
+          <div className="bg-color-3 p-2 rounded-lg flex flex-col items-center w-40">
+            <span className="text-6xl font-bold flex w-full items-center justify-center">
+              {stats.userCount}
+            </span>
+            <p className="text-2xl">Users</p>
+          </div>
+          <div className="bg-color-3 p-2 rounded-lg flex flex-col items-center w-40 ml-2">
+            <span className="text-6xl font-bold flex w-full items-center justify-center">
+              {stats.approvedRecipeCount}
+            </span>
+            <p className="text-2xl">Approved</p>
+          </div>
+          <div className="bg-color-3 p-2 rounded-lg flex flex-col items-center w-40 ml-2">
+            <span className="text-6xl font-bold flex w-full items-center justify-center">
+              {stats.rejectedRecipeCount}
+            </span>
+            <p className="text-2xl">Rejected</p>
+          </div>
+          <div className="bg-color-3 p-2 rounded-lg flex flex-col items-center w-40 ml-2">
+            <span className="text-6xl font-bold flex w-full items-center justify-center">
+              {stats.pendingRecipeCount}
+            </span>
+            <p className="text-2xl">Pending</p>
+          </div>
+          <div className="bg-color-3 p-2 rounded-lg flex flex-col items-center w-40 ml-2">
+            <span className="text-6xl font-bold flex w-full items-center justify-center">
+              {stats.totalRecipeCount}
+            </span>
+            <p className="text-2xl">Total</p>
+          </div>
+        </div>
         {pendingRecipes.length === 0 ? (
           <p className="text-center mt-6">
             Good job! There are no pending recipes for approval.
